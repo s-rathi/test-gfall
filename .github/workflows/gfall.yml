@@ -15,7 +15,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    steps:   
+    steps:
+      - uses: act10ns/slack@v2.0.0
+        with:
+          status: starting
+          message: Starting Check Kurucz data workflow
+        if: always()
+    
       - name: Checkout github repo
         uses: actions/checkout@v3
         with:
@@ -30,10 +36,8 @@ jobs:
         id: download_data
         run: |
           mkdir -p linelists/gfall
-          wget -qO linelists/gfall/gfall.dat http://kurucz.harvard.edu/linelists/gfall/gfall.dat 
-          echo "1"
+          wget -qO linelists/gfall/gfall.dat $SOURCE_URL
           wget -qO linelists/gfall/changesall.dat $CHANGES_URL 
-          echo "2"
           wget -qO linelists/gfall/creationdates.dat $CREATION_URL
           wget -qO linelists/gfall/readme.dat $README_URL
           
@@ -42,9 +46,7 @@ jobs:
         continue-on-error: true
         run: |
           git add .
-          echo "1"
           git status
-          echo "1.5"
           git diff --quiet --exit-code --cached
 
       - name: Commit files to git
@@ -59,4 +61,11 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
+          
+      - name: Report status 
+        uses: act10ns/slack@v2.0.0
+        with:
+          status: ${{ job.status }}
+          steps: ${{ toJson(steps) }}
+        if: always()
           
