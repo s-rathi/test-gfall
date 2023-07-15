@@ -44,8 +44,6 @@ jobs:
           echo "3"
           git diff --quiet --exit-code --cached
           echo "4"
-          FILE_CHANGE=$?
-          echo "change=$FILE_CHANGE" >> "$GITHUB_OUTPUT"
 
       - name: Commit files to git
         id: commit_changes
