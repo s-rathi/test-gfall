@@ -42,17 +42,19 @@ jobs:
         run: |
           git add .
           echo "3"
-          git diff --quiet --exit-code --cached
+          git status
           echo "4"
+          git diff --quiet --exit-code --cached
+          echo "5"
 
       - name: Commit files to git
         id: commit_changes
-        if: ${{ steps.compare.outputs.change == 1 }}
+        if: ${{ steps.compare.outcome == 'failure' }}
         run: |
           git commit -m "New dataset added"
 
       - name: Push changes
-        if: ${{ steps.compare.outputs.change == 1 }}
+        if: ${{ steps.compare.outcome == 'failure' }}
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
