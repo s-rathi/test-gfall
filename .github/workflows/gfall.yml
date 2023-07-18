@@ -48,7 +48,6 @@ jobs:
         continue-on-error: true
         run: |
           git add .
-          git status
           git diff --quiet --exit-code --cached
 
       - name: Commit files to git
